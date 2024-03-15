@@ -2,15 +2,77 @@
 <html>
 <head>
     <title>My App</title>
-</head>
+    <style>
+        @keyframes flash {
+            0% {opacity: 1;}
+            50% {opacity: 0.5;}
+            100% {opacity: 1;}
+        }
+        .flashing {
+            animation: flash 1s linear infinite;
+            color: green; /* change color as needed */
+        }
+    </style>
+    <script>
+        // Copy to Clipboard
+        function copyToClipboard(url) {
+            fetch(url)
+                .then(response => response.text())
+                .then(text => {
+                    var tempInput = document.createElement("textarea");
+                    tempInput.value = text;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(tempInput);
+                    alert("Text copied to clipboard");
+                });
+        }
+
+        // Stop Flashing
+        function stopFlashing(inputId, labelId) {
+            document.getElementById(inputId).addEventListener('change', function() {
+                document.getElementById(labelId).classList.remove('flashing');
+            });
+        }
+    </script>
+
 <body>
-    <h1>Upload files</h1>
-    <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="file1">
-        <input type="file" name="file2">
-        <input type="submit" value="Upload">
-    </form>
-    <div>{{ data_html1 | safe }}</div>
-    <div>{{ data_html2 | safe }}</div>
+    <h1>The PBS Mapping Tool</h1>
+    <h2>Click the buttons below to copy the CCL code to your clipboard</h2>
+    <h3>1. Click the button below to copy the code, cntl-v in DVDev and run the script</h3>
+    <button onclick="copyToClipboard('https://raw.githubusercontent.com/neoversionsix/custom-ccl-jobs/main/PBS/PBS%20New%20Items%20to%20Map.ccl')">
+        Copy PBS Items to Map CCL Script
+    </button>
+    <p>Save the PBS Items to a text xlsx spreadsheet to load in later</p>
+    <br>
+    <h3>2. Click the button below to copy the code, cntl-v in DVDev and run the script</h3>
+    <button onclick="copyToClipboard('https://raw.githubusercontent.com/neoversionsix/custom-ccl-jobs/main/PBS/PBS%20Possible%20Items%20to%20Map%20to%20(All%20types).ccl')">
+        Copy Pharmacy Catalog CCL Script
+    </button>
+    <p>Save the Pharmacy Catalog to a text xlsx spreadsheet to load in later. Now do the same for the Pharmacy Catalog (below)</p>
+    <h1>Load Files</h1>
+    <h3>3. Choose and load the 2 xslx files</h3>
+    {% if not data_html1 %}
+        <form method="POST" enctype="multipart/form-data">
+            <label for="file1">Choose PBS Mapping file</label>
+            <input type="file" name="file1" id="file1">
+            <input type="submit" value="Load Chosen File">
+        </form>
+    {% endif %}
+    {% if data_html1 %}
+        <form method="POST" enctype="multipart/form-data">
+            <label for="file2" >Choose Catalog File</label>
+            <input type="file" name="file2" id="file2">
+            <input type="submit" value="Load Chosen File">
+        </form>
+        <h2>New PBS Items</h2>
+        <div>{{ data_html1 | safe }}</div>
+        <br>
+    {% endif %}
+    {% if data_html2 %}
+        <h2>Pharmacy Catalog Preview</h2>
+        <div>{{ data_html2 | safe }}</div>
+    {% endif %}
 </body>
 </html>
