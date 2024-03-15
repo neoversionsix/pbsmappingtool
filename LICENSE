@@ -1,4 +1,4 @@
-MIT License
+python -c "import flask; print(flask.__version__)"MIT License
 
 Copyright (c) 2024 Jason Whittle
 

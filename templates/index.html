@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+</head>
+<body>
+    <h1>Upload files</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file1">
+        <input type="file" name="file2">
+        <input type="submit" value="Upload">
+    </form>
+    <div>{{ data_html1 | safe }}</div>
+    <div>{{ data_html2 | safe }}</div>
+</body>
+</html>
