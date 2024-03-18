@@ -6,14 +6,21 @@ function createWindow () {
         webPreferences: {
             nodeIntegration: true,
         },
-        fullscreen: true
+        show: false // initially hidden
+    })
+
+    win.once('ready-to-show', () => {
+        win.maximize() // maximize when ready to show
     })
 
     win.loadURL('http://localhost:5000')
 
     win.webContents.on('new-window', function(event, url) {
         event.preventDefault()
-        let newWin = new BrowserWindow({ fullscreen: true })
+        let newWin = new BrowserWindow({ show: false }) // initially hidden
+        newWin.once('ready-to-show', () => {
+            newWin.maximize() // maximize when ready to show
+        })
         newWin.loadURL(url)
     })
 }
