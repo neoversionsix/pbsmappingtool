@@ -1,0 +1,17 @@
+{
+  "name": "pbsmappingtool",
+  "version": "1.0.0",
+  "description": "PBS Australia for Cerner Mapping Tool",
+  "main": "main.js",
+  "scripts": {
+    "start": "set FLASK_APP=app.py && start flask run && electron .",
+    "start-flask": "set FLASK_APP=app.py && flask run",
+    "start-electron": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^29.1.4"
+  }
+}
