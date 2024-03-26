@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Choose Files</title>
+</head>
+<body>
+    <h1>Step 3 - Load file 2</h1>
+    {% if not data_html2 %}
+        <h3>Load the file with the Pharmacy Catalog</h3>
+        <form method="POST" enctype="multipart/form-data">
+            <label for="file2">3.1 Navigate to 'Catalog.xlsx</label>
+            <input type="file" name="file2" id="file2">
+            <input type="submit" value="Load Chosen File">
+        </form>
+    {% endif %}
+    {% if data_html2 %}
+    <a href="/"><button>Next</button></a>
+        <h2>Catalog Loaded (See below) - Click Next (above) </h2>
+        <div>{{ data_html2 | safe }}</div>
+    {% endif %}
+</body>
+</html>

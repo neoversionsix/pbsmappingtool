@@ -36,7 +36,7 @@
             });
         }
     </script>
-
+</head>
 <body>
     <h1>The PBS Mapping Tool</h1>
     <h2>Run the CCL scripts and save the output</h2>
@@ -49,33 +49,8 @@
     <h3>2. Click the button below to copy the code, cntl-v in DVDev and run the script</h3>
     <button onclick="copyToClipboard('https://raw.githubusercontent.com/neoversionsix/custom-ccl-jobs/main/PBS/PBS%20Possible%20Items%20to%20Map%20to%20(All%20types).ccl')">
         Copy Pharmacy Catalog CCL Script
-    </button>
-    <p>Save the Pharmacy Catalog to a xlsx spreadsheet called 'Pharmacy Catalog' to load in later. Now do the same for the Pharmacy Catalog (below)</p>
-    <h1>Load Files</h1>
-    <h3>3. Choose and load the 2 xslx files</h3>
-    {% if not data_html1 and not data_html2 %}
-        <form method="POST" enctype="multipart/form-data">
-            <label for="file1">3.1 Navigate to 'PBS Items.xlsx</label>
-            <input type="file" name="file1" id="file1">
-            <input type="submit" value="3.2 Load Chosen File">
-        </form>
-    {% endif %}
-    {% if data_html1 %}
-        <form method="POST" enctype="multipart/form-data">
-            <label for="file2" class="flashing">4.1 Navigate to 'Pharmacy Catalog.xlsx'</label>
-            <input type="file" name="file2" id="file2">
-            <input type="submit" value="4.2 Load Chosen File">
-        </form>
-        <h2>New PBS Items</h2>
-        <div>{{ data_html1 | safe }}</div>
-        <br>
-    {% endif %}
-    {% if data_html2 %}
-        <button onclick="copyToClipboard('https://raw.githubusercontent.com/neoversionsix/custom-ccl-jobs/main/PBS/PBS%20Possible%20Items%20to%20Map%20to%20(All%20types).ccl')">
-            START MAPPING!!!!
         </button>
-        <h2>Pharmacy Catalog Preview</h2>
-        <div>{{ data_html2 | safe }}</div>
-    {% endif %}
-</body>
-</html>
+        <p>Save the Pharmacy Catalog to a xlsx spreadsheet called 'Pharmacy Catalog' to load in later. Now do the same for the Pharmacy Catalog (below)</p>
+        <a href="/2choosefile1"><button>Next</button></a>
+    </body>
+    </html>
