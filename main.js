@@ -13,7 +13,14 @@ function createWindow () {
         win.maximize() // maximize when ready to show
     })
 
-    win.loadURL('http://localhost:5000')
+    function loadURL() {
+        win.loadURL('http://localhost:5000').catch((err) => {
+            console.error('Failed to load http://localhost:5000, retrying in 1 second', err);
+            setTimeout(loadURL, 1000);
+        });
+    }
+
+    loadURL();
 
     win.webContents.on('new-window', function(event, url) {
         event.preventDefault()
