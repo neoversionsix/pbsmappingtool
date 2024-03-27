@@ -4,13 +4,13 @@
     <title>Choose Files</title>
 </head>
 <body>
-    <h1>Step 3 - Load file 2</h1>
+    <h1>Step 3 - Load file 2 - Pharmacy Catalog</h1>
     {% if not data_html2 %}
         <h3>Load the file with the Pharmacy Catalog</h3>
         <form method="POST" enctype="multipart/form-data">
             <label for="file2">3.1 Navigate to 'Catalog.xlsx</label>
             <input type="file" name="file2" id="file2">
-            <input type="submit" value="Load Chosen File">
+            <input type="submit" value="Load">
         </form>
     {% endif %}
     {% if data_html2 %}

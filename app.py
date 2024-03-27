@@ -16,7 +16,7 @@ def choose_file_1():
     if 'file1' in request.files:
         file1 = request.files['file1']
         data1 = pd.read_excel(file1, engine='openpyxl')
-        g.data1 = data1  # Store data1 in the g object
+        #g.data1 = data1  # Store data1 in the g object
     return render_template('2choosefile1.html')
 
 
@@ -26,7 +26,7 @@ def choose_file_2():
     if 'file2' in request.files:
         file2 = request.files['file2']
         data2 = pd.read_excel(file2, engine='openpyxl')
-        g.data2 = data2  # Store data2 in the g object
+        #g.data2 = data2  # Store data2 in the g object
     return render_template('3choosefile2.html')
 
 
