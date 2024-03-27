@@ -1,6 +1,10 @@
 {
     "cSpell.words": [
         "choosefile",
-        "openpyxl"
+        "fuzzywuzzy",
+        "mapdata",
+        "openpyxl",
+        "urandom",
+        "werkzeug"
     ]
 }

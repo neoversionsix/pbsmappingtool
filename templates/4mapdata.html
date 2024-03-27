@@ -2,8 +2,79 @@
 <html>
 <head>
     <title>Map Data</title>
+    <style>
+        .container {
+            display: grid;
+            grid-template-rows: 5% 20% 75% 5%;
+            height: 90vh;
+            width: 100vw;
+        }
+        .progress-bar {
+            grid-row: 1;
+            background: lightgray;
+        }
+        .progress-bar div {
+            height: 100%;
+            background: blue;
+            width: 0; /* Update this value to fill the progress bar */
+        }
+        .window-container {
+            grid-row: 2 / 4;
+            display: grid;
+            grid-template-columns: 40% 60%;
+            grid-template-rows: 1fr 3fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .window-section {
+            display: flex;
+            flex-direction: column;
+        }
+        .window {
+            border: 1px solid black;
+            padding: 10px;
+            overflow: auto; /* Adds scroll bars when needed */
+            flex-grow: 1;
+        }
+        .button-container {
+            grid-row: 4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+        }
+    </style>
 </head>
 <body>
-    <h1>Map Data</h1>
+    <div class="container">
+        <div class="progress-bar">
+            <div></div>
+        </div>
+        <div class="window-container">
+            <div class="window-section">
+                <h4>Saved Matches</h4>
+                <div class="window" id="saved-matches"></div>
+            </div>
+            <div class="window-section">
+                <h4>Current Item Name</h4>
+                <div class="window" id="current-item-name"></div>
+            </div>
+            <div class="window-section">
+                <h4>Current Item Details</h4>
+                <div class="window" id="current-item-details"></div>
+            </div>
+            <div class="window-section">
+                <h4>Match Options</h4>
+                <div class="window" id="match-options"></div>
+            </div>
+        </div>
+        <div class="button-container">
+            <button>Save current - next item</button>
+        </div>
+    </div>
 </body>
 </html>
