@@ -34,5 +34,10 @@ def choose_file_2():
     return render_template('3choosefile2.html', data_html2=data_html2)
 
 
+# Routing for the page 4mapdata.html
+@app.route('/4mapdata', methods=['GET', 'POST'])
+def map_data():
+    return render_template('4mapdata.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
