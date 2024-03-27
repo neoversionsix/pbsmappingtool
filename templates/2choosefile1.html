@@ -2,15 +2,19 @@
 <html>
 <head>
     <title>Choose Files</title>
+    <script>
+        function handleFileChange() {
+            document.getElementById("fileForm").submit();
+        }
+    </script>
 </head>
 <body>
     <h1>Step 2 - Load file 1 - New Items</h1>
     {% if not data_html1 %}
         <h3>Load the file with the new PBS Items</h3>
-        <form method="POST" enctype="multipart/form-data">
+        <form id="fileForm" method="POST" enctype="multipart/form-data">
             <label for="file1">3.1 Navigate to 'PBS Items.xlsx</label>
-            <input type="file" name="file1" id="file1">
-            <input type="submit" value="Load">
+            <input type="file" name="file1" id="file1" onchange="handleFileChange()">
         </form>
     {% endif %}
     {% if data_html1 %}
@@ -20,4 +24,3 @@
     {% endif %}
 </body>
 </html>
-
