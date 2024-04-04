@@ -73,8 +73,12 @@
             </div>
         </div>
         <div class="button-container">
-            <button id="start-btn">Start</button>
-            <button id="save-btn">Save current - next item</button>
+            <form method="POST" action="/start">
+                <button type="submit">Start</button>
+            </form>
+            <form method="POST" action="/save">
+                <button type="submit">Next/Save</button>
+            </form>
         </div>
     </div>
 </body>
