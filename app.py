@@ -53,23 +53,17 @@ def map_data():
     # Read the data from the files
     data1 = pd.read_excel(file1_path, engine='openpyxl')
     data2 = pd.read_excel(file2_path, engine='openpyxl')
-    # Convert the data back to html
-    data_html_test = data2.to_html(index=False) 
+    
+    # Get the first 'PRIMARY' item
+    if 'PRIMARY' in data1.columns:
+        first_primary = data1['PRIMARY'].iloc[0]
+        print(f"First primary: {first_primary}")
+    else:
+        first_primary = 'PRIMARY column not found in data1'
+        print(f"First primary: {first_primary}")    
     # Return the html to the user
-    return render_template('4mapdata.html', data_html_test=data_html_test)
+    return render_template('4mapdata.html', first_primary=first_primary)
 
-@app.route('/start', methods=['POST'])
-def start():
-    file1_path = os.path.join(UPLOAD_FOLDER, 'pbsitems.xlsx')  # Define the file path
-    data1 = pd.read_excel(file1_path, engine='openpyxl')
-    primary_value = data1['PRIMARY'].iloc[0]
-    return render_template('4mapdata.html', primary_value=primary_value)
-
-@app.route('/save', methods=['POST'])
-def save():
-    # Your Python code for the "Save" button here
-    print("Save button clicked!")
-    return redirect(url_for('map_data'))
 
 if __name__ == '__main__':
     app.run(debug=True)
