@@ -2,8 +2,11 @@
     "cSpell.words": [
         "choosefile",
         "fuzzywuzzy",
+        "iloc",
         "mapdata",
         "openpyxl",
+        "pbsitems",
+        "pharmacycatalog",
         "urandom",
         "werkzeug"
     ]

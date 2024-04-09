@@ -60,12 +60,16 @@
                 <div class="window" id="saved-matches"></div>
             </div>
             <div class="window-section">
-                <h4>Current Item Name</h4>
-                <div class="window" id="current-item-name">{{ first_primary }}</div>
+                <h4>Current Item Name (Row: {{ row_number }}, Type: {{ current_column }})</h4>
+                <div class="window" id="current-item-name">{{ current_item }}</div>
             </div>
             <div class="window-section">
                 <h4>Current Item Details</h4>
-                <div class="window" id="current-item-details"></div>
+                <div class="window" id="current-item-details">
+                    {% for column, value in row_info.items() %}
+                        {{ column }}: {{ value }}<br>
+                    {% endfor %}
+                </div>
             </div>
             <div class="window-section">
                 <h4>Match Options</h4>
@@ -73,11 +77,8 @@
             </div>
         </div>
         <div class="button-container">
-            <form method="POST" action="/start">
-                <button type="submit">Start</button>
-            </form>
             <form method="POST" action="/save">
-                <button type="submit">Next/Save</button>
+                <button type="submit" id="next-save">Next / Save Selections</button>
             </form>
         </div>
     </div>
