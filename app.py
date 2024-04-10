@@ -133,6 +133,15 @@ def map_data():
     if current_column == 'PRIMARY':
         df_primaries = cache.get('df_primaries')  # Retrieve df_primaries from the cache
         matches = fuzzy_logic_df_weighted(current_item, df_primaries['NAME']).head(50)
+    elif current_column == 'BRAND':
+        df_brands = cache.get('df_brands')  # Retrieve df_brands from the cache
+        matches = fuzzy_logic_df_weighted(current_item, df_brands['NAME']).head(50)
+    elif current_column == 'GENERIC':
+        df_generics = cache.get('df_generics')  # Retrieve df_generics from the cache
+        matches = fuzzy_logic_df_weighted(current_item, df_generics['NAME']).head(50)
+    elif current_column == 'TRADE':
+        df_trades = cache.get('df_trades')  # Retrieve df_trades from the cache
+        matches = fuzzy_logic_df_weighted(current_item, df_trades['NAME']).head(50)
     else:
         matches = pd.DataFrame()  # Empty DataFrame
 
