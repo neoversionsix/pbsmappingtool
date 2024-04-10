@@ -7,7 +7,7 @@
             display: grid;
             grid-template-rows: 5% 20% 75% 5%;
             height: 90vh;
-            width: 100vw;
+            width: 99%;
         }
         .progress-bar {
             grid-row: 1;
@@ -51,21 +51,23 @@
 </head>
 <body>
     <div class="container">
-        <div class="progress-bar">
+        <div class="progress-bar" style="max-width: 99vw;">
             <div></div>
         </div>
         <div class="window-container">
             <div class="window-section">
                 <h4>Saved Matches</h4>
-                <div class="window" id="saved-matches"></div>
+                <div class="window" id="saved-matches" style="max-height: 10vh; max-width: 40vw;"></div>
             </div>
             <div class="window-section">
                 <h4>Current Item Name (Row: {{ row_number }}, Type: {{ current_column }})</h4>
-                <div class="window" id="current-item-name">{{ current_item }}</div>
+                <div class="window" id="current-item-name" style="max-height: 10vh; max-width: 56vw;">
+                    {{ current_item }}
+                </div>
             </div>
             <div class="window-section">
                 <h4>Current Item Details</h4>
-                <div class="window" id="current-item-details">
+                <div class="window" id="current-item-details" style="max-height: 50vh; max-width: 40vw;">
                     {% for column, value in row_info.items() %}
                         {{ column }}: {{ value }}<br>
                     {% endfor %}
@@ -73,7 +75,7 @@
             </div>
             <div class="window-section">
                 <h4>{{ current_column }} Match Options</h4>
-                <div class="window" id="match-options">
+                <div class="window" id="match-options" style="max-height: 50vh; max-width: 56vw;">
                     {% for match in matches %}
                         <input type="checkbox" id="match-{{ loop.index }}" name="match-{{ loop.index }}">
                         <label for="match-{{ loop.index }}">
