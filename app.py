@@ -50,6 +50,25 @@ def choose_file_2():
         data2 = pd.read_excel(file2_path, engine='openpyxl')
         cache.set('data2', data2)  # Store data2 in the cache
         data_html2 = data2.head(50).to_html(index=False)
+        
+
+        #Store the item types seperately
+        df_primaries = data2[data2['ITEM_TYPE'] == 'PRIMARY']
+        df_primaries = df_primaries.reset_index(drop=True)  # Reset the index
+        cache.set('df_primaries', df_primaries)  # Store df_primaries in the cache
+
+        df_brands = data2[data2['ITEM_TYPE'] == 'BRAND']
+        df_brands = df_brands.reset_index(drop=True)  # Reset the index
+        cache.set('df_brands', df_brands)  # Store in the cache
+
+        df_generics = data2[data2['ITEM_TYPE'] == 'GENERIC']
+        df_generics = df_generics.reset_index(drop=True)  # Reset the index
+        cache.set('df_generics', df_generics)  # Store in the cache
+
+        df_trades = data2[data2['ITEM_TYPE'] == 'TRADE']
+        df_trades = df_trades.reset_index(drop=True)  # Reset the index
+        cache.set('df_trades', df_trades)  # Store in the cache
+
     return render_template('3choosefile2.html', data_html2=data_html2)
 
 # Routing for the page 4mapdata.html
@@ -60,7 +79,11 @@ def map_data():
 
     data1 = cache.get('data1')  # Retrieve data1 from the cache
     data2 = cache.get('data2')  # Retrieve data2 from the cache
-
+    df_primaries = cache.get('df_primaries')  # Retrieve df_primaries from the cache
+    df_brands = cache.get('df_brands')  # Retrieve df_brands from the cache
+    df_generics = cache.get('df_generics')  # Retrieve df_generics from the cache
+    df_trades = cache.get('df_trades')  # Retrieve df_trades from the cache
+    
     row_number = session.get('row_number', 0)  # Get the value of row_number from the session
     column_number = session.get('column_number', 0)  # Get the value of column_number from the session
 
