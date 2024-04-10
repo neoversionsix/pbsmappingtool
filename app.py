@@ -73,7 +73,7 @@ def choose_file_2():
         file2 = request.files['file2']
         # Define the file path
         file2_path = os.path.join(UPLOAD_FOLDER, 'pharmacycatalog.xlsx')
-        file2.save(file2_path)  # Save the file
+        #file2.save(file2_path)  # Save the file
         data2 = pd.read_excel(file2_path, engine='openpyxl')
         #cache.set('data2', data2)  # Store data2 in the cache
         data_html2 = data2.head(20).to_html(index=False)
@@ -101,8 +101,7 @@ def choose_file_2():
 # Routing for the page 4mapdata.html
 @app.route('/4mapdata', methods=['GET', 'POST'])
 def map_data():
-    file1_path = os.path.join(UPLOAD_FOLDER, 'pbsitems.xlsx')
-    file2_path = os.path.join(UPLOAD_FOLDER, 'pharmacycatalog.xlsx')
+    final_table = cache.get('final_table') or []
 
     data1 = cache.get('data1')  # Retrieve data1 from the cache
     #data2 = cache.get('data2')  # Retrieve data2 from the cache
@@ -125,9 +124,10 @@ def map_data():
 
     # Get the current item from the current column
     current_item = data1[current_column].iloc[row_number] if current_column in data1.columns else f'{current_column} column not found in data1'
-
+    session['current_item'] = current_item
     # Get all the information for the given row
     row_info = data1.iloc[row_number].to_dict()
+    session['row_info'] = row_info
 
     # Create the fuzzy logic dataframe
     if current_column == 'PRIMARY':
@@ -150,13 +150,17 @@ def map_data():
          current_column=current_column, 
          row_number=row_number,
          row_info=row_info,
-         matches=matches.to_dict('records')  # Convert the DataFrame to a list of dictionaries
+         matches=matches.to_dict('records'),
+         final_table=final_table  # Convert the DataFrame to a list of dictionaries
          )
 
 
 # next-save button functionality
 @app.route('/save', methods=['POST'])
 def save():
+    current_item = session.get('current_item', '')  # Get the value of current_item from the session
+    row_info = session.get('row_info', {})
+    
     column_number = session.get('column_number', 0)  # Get the value of column_number from the session
     row_number = session.get('row_number', 0)  # Get the value of row_number from the session
 
@@ -168,6 +172,25 @@ def save():
 
     session['column_number'] = column_number
     session['row_number'] = row_number
+
+    # Get the checked matches from the form data
+    checked_matches = request.form.getlist('match')
+    print(f"Checked matches: {checked_matches}")  # Print the checked matches
+
+
+    # Get the final table from the cache, or initialize it if it doesn't exist
+    final_table = cache.get('final_table') or []
+
+    # Add the checked matches to the final table
+    for match in checked_matches:
+        final_table.append({
+            'current_item': current_item,
+            'data1_row': row_info,
+            'match': match
+        })
+
+    # Store the updated final table in the cache
+    cache.set('final_table', final_table)
 
     return redirect(url_for('map_data'))  # Redirect back to the map_data route
 
