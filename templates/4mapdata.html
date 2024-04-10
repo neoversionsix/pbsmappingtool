@@ -73,7 +73,14 @@
             </div>
             <div class="window-section">
                 <h4>{{ current_column }} Match Options</h4>
-                <div class="window" id="match-options"></div>
+                <div class="window" id="match-options">
+                    {% for match in matches %}
+                        <input type="checkbox" id="match-{{ loop.index }}" name="match-{{ loop.index }}">
+                        <label for="match-{{ loop.index }}">
+                            {{ match.Value }} (<span style="color: green;">{{ match.Score }}</span>)
+                        </label><br>
+                    {% endfor %}
+                </div>
             </div>
         </div>
         <div class="button-container">
