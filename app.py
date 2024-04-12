@@ -146,13 +146,13 @@ def map_data():
         matches = pd.DataFrame()  # Empty DataFrame
 
     return render_template('4mapdata.html',
-         current_item=current_item,
-         current_column=current_column, 
-         row_number=row_number,
-         row_info=row_info,
-         matches=matches.to_dict('records'),
-         final_table=final_table  # Convert the DataFrame to a list of dictionaries
-         )
+        current_item=current_item,
+        current_column=current_column, 
+        row_number=row_number,
+        row_info=row_info,
+        matches=matches.to_dict('records'),
+        final_table=final_table  # Pass final_table to the template
+    )
 
 
 # next-save button functionality
@@ -174,15 +174,15 @@ def save():
     session['row_number'] = row_number
 
     # Get the checked matches from the form data
-    checked_matches = request.form.getlist('match')
+    checked_matches = [key.split('-')[1] for key in request.form if key.startswith('match-')]
     print(f"Checked matches: {checked_matches}")  # Print the checked matches
-
 
     # Get the final table from the cache, or initialize it if it doesn't exist
     final_table = cache.get('final_table') or []
 
     # Add the checked matches to the final table
-    for match in checked_matches:
+    for match_index in checked_matches:
+        match = request.form.get(f"match-{match_index}")
         final_table.append({
             'current_item': current_item,
             'data1_row': row_info,

@@ -58,7 +58,11 @@
         <div class="window-container">
             <div class="window-section">
                 <h4>Saved Matches</h4>
-                <div class="window" id="saved-matches" style="max-height: 10vh; max-width: 40vw;"></div>
+                <div class="window" id="saved-matches" style="max-height: 10vh; max-width: 40vw;">
+                {% for item in final_table %}
+                <p>{{ item }}</p> <!-- Display each item in the final_table -->
+                {% endfor %}
+                </div>
             </div>
             <div class="window-section">
                 <h4>Current Item Name (Row: {{ row_number }}, Type: {{ current_column }})</h4>
