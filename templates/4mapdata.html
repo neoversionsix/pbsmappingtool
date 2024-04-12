@@ -29,6 +29,7 @@
         .window-section {
             display: flex;
             flex-direction: column;
+            flex-grow: 1; /* Added this line */
         }
         .window {
             border: 1px solid black;
@@ -75,6 +76,7 @@
             </div>
             <div class="window-section">
                 <h4>{{ current_column }} Match Options</h4>
+                <form method="POST" action="/save">
                 <div class="window" id="match-options" style="max-height: 50vh; max-width: 56vw;">
                     {% for match in matches %}
                         <input type="checkbox" id="match-{{ loop.index }}" name="match-{{ loop.index }}">
@@ -86,7 +88,6 @@
             </div>
         </div>
         <div class="button-container">
-            <form method="POST" action="/save">
                 <button  id="next-save" type ="submit">
                     Next / Save Selections
                 </button>
