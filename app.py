@@ -136,25 +136,42 @@ def map_data():
     if current_column == 'PRIMARY':
         df_primaries = cache.get('df_primaries')  # Retrieve df_primaries from the cache
         matches = fuzzy_logic_df_weighted(current_item, df_primaries['NAME']).head(50)
+        matches = matches.join(df_primaries, how='left', lsuffix='_match', rsuffix='_original')
     elif current_column == 'BRAND':
         df_brands = cache.get('df_brands')  # Retrieve df_brands from the cache
         matches = fuzzy_logic_df_weighted(current_item, df_brands['NAME']).head(50)
+        matches = matches.join(df_brands, how='left', lsuffix='_match', rsuffix='_original')
     elif current_column == 'GENERIC':
         df_generics = cache.get('df_generics')  # Retrieve df_generics from the cache
         matches = fuzzy_logic_df_weighted(current_item, df_generics['NAME']).head(50)
+        matches = matches.join(df_generics, how='left', lsuffix='_match', rsuffix='_original')
     elif current_column == 'TRADE':
         df_trades = cache.get('df_trades')  # Retrieve df_trades from the cache
         matches = fuzzy_logic_df_weighted(current_item, df_trades['NAME']).head(50)
+        matches = matches.join(df_trades, how='left', lsuffix='_match', rsuffix='_original')
     else:
         matches = pd.DataFrame()  # Empty DataFrame
 
+    matches.reset_index(drop=True, inplace=True)  # Reset the index
+    cache.set('matches', matches)  # Store matches in the cache
+    matches_dict = matches.reset_index().to_dict('records')
+
+
+    # Check if the current row and column are beyond the last ones 
+    is_last_row_and_column = row_number >= len(data1) and column_number >= len(columns)
+
+    # If it's beyond the last row and column redirect to the index page
+    if is_last_row_and_column:
+        return redirect('index.html')
+     
     return render_template('4mapdata.html',
         current_item=current_item,
         current_column=current_column, 
         row_number=row_number,
         row_info=row_info,
-        matches=matches.to_dict('records'),
-        final_table_html=final_table_html  # Pass final_table to the template
+        matches=matches_dict,
+        final_table_html=final_table_html,
+        is_last_row_and_column=is_last_row_and_column  
     )
 
 
@@ -169,7 +186,6 @@ def save():
         final_table = pd.DataFrame()
     column_number = session.get('column_number', 0)  # Get the value of column_number from the session
     row_number = session.get('row_number', 0)  # Get the value of row_number from the session
-
     column_number = (column_number + 1) % len(columns)  # Increment column_number and wrap around to 0 when it reaches the end of the columns
 
     # If column_number wrapped around to 0, increment row_number
@@ -179,25 +195,28 @@ def save():
     session['column_number'] = column_number
     session['row_number'] = row_number
 
+    matches = cache.get('matches')  # Retrieve matches from the cache
+
     # Get the checked matches from the form data
-    checked_matches = [request.form.get(key) for key in request.form if key.startswith('match-')]
-    
-    #for debugging
-    print(type(final_table)) 
+    checked_matches = [key.split('-')[1] for key in request.form if key.startswith('match-') and key != 'save']
 
     # Add the checked matches to the final table
-    for match in checked_matches:
-        df_to_append = pd.DataFrame([{
-            'current_item': current_item,
-            'data1_row': row_info,
-            'match': match
-        }])
+    for match_index in checked_matches:
+        # Convert the match_index to an integer
+        match_index = int(match_index)
+
+        # Get the matched row from the matches DataFrame
+        match_row = matches.loc[match_index]
+
+        # Create a DataFrame from the current row in data1 and the matched row
+        df_to_append = pd.concat([pd.DataFrame([row_info], index=[0]), pd.DataFrame([match_row], index=[0])], axis=1)
+        
+        # Append the DataFrame to the final table
         final_table = pd.concat([final_table, df_to_append], ignore_index=True)
-    
+
     # Store the updated final table in the cache
     cache.set('final_table', final_table)
 
     return redirect(url_for('map_data'))  # Redirect back to the map_data route
-
 if __name__ == '__main__':
     app.run(debug=True)
