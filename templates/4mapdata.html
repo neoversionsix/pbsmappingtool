@@ -59,9 +59,7 @@
             <div class="window-section">
                 <h4>Saved Matches</h4>
                 <div class="window" id="saved-matches" style="max-height: 10vh; max-width: 40vw;">
-                {% for item in final_table %}
-                <p>{{ item }}</p> <!-- Display each item in the final_table -->
-                {% endfor %}
+                    {{ final_table_html | safe }}
                 </div>
             </div>
             <div class="window-section">

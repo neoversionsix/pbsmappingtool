@@ -101,7 +101,13 @@ def choose_file_2():
 # Routing for the page 4mapdata.html
 @app.route('/4mapdata', methods=['GET', 'POST'])
 def map_data():
-    final_table = cache.get('final_table') or []
+    # Get the final table from the cache, or initialize it if it doesn't exist
+    final_table = cache.get('final_table')
+    if final_table is None:
+        final_table = pd.DataFrame()
+
+    # Convert the current final table to html
+    final_table_html = final_table.to_html(index=False)
 
     data1 = cache.get('data1')  # Retrieve data1 from the cache
     #data2 = cache.get('data2')  # Retrieve data2 from the cache
@@ -115,9 +121,6 @@ def map_data():
     
     # Get the value of column_number from the session
     column_number = session.get('column_number', 0)
-
-    # List of columns to display
-    columns = ['PRIMARY', 'BRAND', 'GENERIC', 'TRADE']
     
     # Get the current column
     current_column = columns[column_number]
@@ -151,7 +154,7 @@ def map_data():
         row_number=row_number,
         row_info=row_info,
         matches=matches.to_dict('records'),
-        final_table=final_table  # Pass final_table to the template
+        final_table_html=final_table_html  # Pass final_table to the template
     )
 
 
@@ -160,7 +163,10 @@ def map_data():
 def save():
     current_item = session.get('current_item', '')  # Get the value of current_item from the session
     row_info = session.get('row_info', {})
-    
+    # Get the final table from the cache, or initialize it if it doesn't exist
+    final_table = cache.get('final_table')
+    if final_table is None:
+        final_table = pd.DataFrame()
     column_number = session.get('column_number', 0)  # Get the value of column_number from the session
     row_number = session.get('row_number', 0)  # Get the value of row_number from the session
 
@@ -174,21 +180,20 @@ def save():
     session['row_number'] = row_number
 
     # Get the checked matches from the form data
-    checked_matches = [key.split('-')[1] for key in request.form if key.startswith('match-')]
-    print(f"Checked matches: {checked_matches}")  # Print the checked matches
-
-    # Get the final table from the cache, or initialize it if it doesn't exist
-    final_table = cache.get('final_table') or []
+    checked_matches = [request.form.get(key) for key in request.form if key.startswith('match-')]
+    
+    #for debugging
+    print(type(final_table)) 
 
     # Add the checked matches to the final table
-    for match_index in checked_matches:
-        match = request.form.get(f"match-{match_index}")
-        final_table.append({
+    for match in checked_matches:
+        df_to_append = pd.DataFrame([{
             'current_item': current_item,
             'data1_row': row_info,
             'match': match
-        })
-
+        }])
+        final_table = pd.concat([final_table, df_to_append], ignore_index=True)
+    
     # Store the updated final table in the cache
     cache.set('final_table', final_table)
 
