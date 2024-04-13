@@ -157,13 +157,9 @@ def map_data():
     matches_dict = matches.reset_index().to_dict('records')
 
 
-    # Check if the current row and column are beyond the last ones 
-    is_last_row_and_column = row_number >= len(data1) and column_number >= len(columns)
+    # Check if the current row and column are the the last ones 
+    is_last_row_and_column = row_number >= len(data1) -1 and column_number >= len(columns) -1
 
-    # If it's beyond the last row and column redirect to the index page
-    if is_last_row_and_column:
-        return redirect('index.html')
-     
     return render_template('4mapdata.html',
         current_item=current_item,
         current_column=current_column, 

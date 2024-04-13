@@ -93,6 +93,9 @@
                 <button id="next-save" type="submit" {% if is_last_row_and_column %}disabled{% endif %}>
                     Next / Save Selections
                 </button>
+                <button id="save-end" name="save-end" type="submit" style="display: {% if is_last_row_and_column %}block{% else %}none{% endif %};">
+                    SAVE/END
+                </button>
             </form>
         </div>
     </div>
