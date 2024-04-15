@@ -55,7 +55,7 @@
             btn.disabled = true;
 
             // Re-enable the button after 2 seconds
-            setTimeout(function(){ btn.disabled = false; }, 2000);
+            setTimeout(function(){ btn.disabled = false; }, 3000);
         }
     </script>
 </head>
@@ -99,7 +99,7 @@
             </div>
         </div>
                 <div class="button-container">
-                    <button id="next-save" type="submit" {% if is_last_row_and_column %}disabled{% endif %} onclick="setTimeout(function(){disableButton(document.getElementById('next-save'));}, 100);">
+                    <button id="next-save" type="submit" {% if is_last_row_and_column %}disabled{% endif %} onclick="setTimeout(function(){disableButton(document.getElementById('next-save'));}, 500);">
                         Next / Save Selections
                     </button>
                     <button id="save-end" name="save-end" type="submit" onclick="document.getElementById('my-form').action='/save_end';" style="display: {% if is_last_row_and_column %}block{% else %}none{% endif %};">
