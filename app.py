@@ -111,10 +111,10 @@ def map_data():
 
     data1 = cache.get('data1')  # Retrieve data1 from the cache
     #data2 = cache.get('data2')  # Retrieve data2 from the cache
-    df_primaries = cache.get('df_primaries')  # Retrieve df_primaries from the cache
-    df_brands = cache.get('df_brands')  # Retrieve df_brands from the cache
-    df_generics = cache.get('df_generics')  # Retrieve df_generics from the cache
-    df_trades = cache.get('df_trades')  # Retrieve df_trades from the cache
+    #df_primaries = cache.get('df_primaries')  # Retrieve df_primaries from the cache
+    #df_brands = cache.get('df_brands')  # Retrieve df_brands from the cache
+    #df_generics = cache.get('df_generics')  # Retrieve df_generics from the cache
+    #df_trades = cache.get('df_trades')  # Retrieve df_trades from the cache
 
     # Get the value of row_number from the session
     row_number = session.get('row_number', 0)
@@ -126,10 +126,16 @@ def map_data():
     current_column = columns[column_number]
 
     # Get the current item from the current column
-    current_item = data1[current_column].iloc[row_number] if current_column in data1.columns else f'{current_column} column not found in data1'
+    try:
+        current_item = data1[current_column].iloc[row_number] if current_column in data1.columns else f'{current_column} column not found in data1'
+    except IndexError:
+        current_item = f'Row {row_number} not found in data1'
     session['current_item'] = current_item
     # Get all the information for the given row
-    row_info = data1.iloc[row_number].to_dict()
+    try:
+        row_info = data1.iloc[row_number].to_dict() # Convert the row to a dictionary
+    except IndexError: # Handle the case where the row number is out of range
+        row_info = {}
     session['row_info'] = row_info
 
     # Create the fuzzy logic dataframe
@@ -159,6 +165,7 @@ def map_data():
 
     # Check if the current row and column are the the last ones 
     is_last_row_and_column = row_number >= len(data1) -1 and column_number >= len(columns) -1
+    cache.set('is_last_row_and_column', is_last_row_and_column)
 
     return render_template('4mapdata.html',
         current_item=current_item,
@@ -182,11 +189,14 @@ def save():
         final_table = pd.DataFrame()
     column_number = session.get('column_number', 0)  # Get the value of column_number from the session
     row_number = session.get('row_number', 0)  # Get the value of row_number from the session
-    column_number = (column_number + 1) % len(columns)  # Increment column_number and wrap around to 0 when it reaches the end of the columns
+    # Get the value of is_last_row_and_column from the cache
+    is_last_row_and_column = cache.get('is_last_row_and_column')
 
-    # If column_number wrapped around to 0, increment row_number
-    if column_number == 0:
-        row_number += 1
+    if not is_last_row_and_column:
+        column_number = (column_number + 1) % len(columns)  # Increment column_number and wrap around to 0 when it reaches the end of the columns
+        # If column_number wrapped around to 0, increment row_number
+        if column_number == 0:
+            row_number += 1
 
     session['column_number'] = column_number
     session['row_number'] = row_number
@@ -214,5 +224,42 @@ def save():
     cache.set('final_table', final_table)
 
     return redirect(url_for('map_data'))  # Redirect back to the map_data route
+
+@app.route('/save_end', methods=['POST'])
+def save_end():
+    current_item = session.get('current_item', '')  # Get the value of current_item from the session
+    row_info = session.get('row_info', {})
+    # Get the final table from the cache, or initialize it if it doesn't exist
+    final_table = cache.get('final_table')
+    if final_table is None:
+        final_table = pd.DataFrame()
+    matches = cache.get('matches')  # Retrieve matches from the cache
+
+    # Get the checked matches from the form data
+    checked_matches = [key.split('-')[1] for key in request.form if key.startswith('match-') and key != 'save']
+
+    # Add the checked matches to the final table
+    for match_index in checked_matches:
+        # Convert the match_index to an integer
+        match_index = int(match_index)
+
+        # Get the matched row from the matches DataFrame
+        match_row = matches.loc[match_index]
+
+        # Create a DataFrame from the current row in data1 and the matched row
+        df_to_append = pd.concat([pd.DataFrame([row_info], index=[0]), pd.DataFrame([match_row], index=[0])], axis=1)
+        
+        # Append the DataFrame to the final table
+        final_table = pd.concat([final_table, df_to_append], ignore_index=True)
+
+    cache.set('final_table', final_table)
+
+    final_table_html = final_table.to_html(index=False)
+    # Store the updated final table in the cache
+    
+    return render_template('finalmatches.html',
+        final_table_html=final_table_html,
+    )
+
 if __name__ == '__main__':
     app.run(debug=True)
