@@ -14,7 +14,7 @@ UPLOAD_FOLDER = 'uploads'
 
 template = """
 ;________________________________________________
-;  PBS mapping script for PBS_DRUG_ID: _PBS_DRUG_ID_ and SYNONYM_ID: _SYNONYM_ID_
+;  PBS mapping script for PBS_DRUG_ID: MAP_PBS_DRUG_ID_ and SYNONYM_ID: MAP_SYNONYM_ID_
 update into pbs_ocs_mapping ocsm
 set
     ocsm.beg_effective_dt_tm = cnvtdatetime(curdate, 0004)
