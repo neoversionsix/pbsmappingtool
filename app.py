@@ -6,29 +6,66 @@ from fuzzywuzzy import fuzz, process
 import os
 #from werkzeug.utils import secure_filename
 import pickle
+import pyperclip
 
 columns = ['PRIMARY', 'BRAND', 'GENERIC', 'TRADE']  # List of columns to display
 
 UPLOAD_FOLDER = 'uploads'
 
+template = """
+;________________________________________________
+;  PBS mapping script for PBS_DRUG_ID: _PBS_DRUG_ID_ and SYNONYM_ID: _SYNONYM_ID_
+update into pbs_ocs_mapping ocsm
+set
+    ocsm.beg_effective_dt_tm = cnvtdatetime(curdate, 0004)
+    ; Above line sets the activation time to today at 12:04 am, used to identify this type of update
+    , ocsm.end_effective_dt_tm = cnvtdatetime("31-DEC-2100")
+    /*CHANGE THE ROW BELOW MAP_PBS_DRUG_ID__1*/
+    , ocsm.pbs_drug_id = MAP_PBS_DRUG_ID__1 ; Swap With Pbs Drug Id that maps to the synonym id
+    /*CHANGE THE ROW BELOW MAP_SYNONYM_ID__2*/
+    , ocsm.synonym_id = MAP_SYNONYM_ID__2 ; Swap With Synonym Id that maps to the pbs_drug_id
+    , ocsm.drug_synonym_id = 0 ; clear multum mapping (multum mappings are not used)
+    , ocsm.main_multum_drug_code = 0 ; clear multum mapping
+    , ocsm.drug_identifier = "0" ; clear multum mapping
+    , ocsm.updt_dt_tm = cnvtdatetime(curdate,curtime3)
+    , ocsm.updt_id = reqinfo->updt_id
+    , ocsm.updt_cnt = ocsm.updt_cnt + 1
+where
+    ;Update the next unused row
+    ocsm.pbs_ocs_mapping_id =
+    (select min(pbs_ocs_mapping_id) from pbs_ocs_mapping where end_effective_dt_tm < sysdate)
+    ; Only Update if the item is NOT already mapped
+    and not exists
+    (
+        select 1
+        from pbs_ocs_mapping
+        /*CHANGE THE ROW BELOW MAP_PBS_DRUG_ID__1*/
+        where pbs_drug_id = MAP_PBS_DRUG_ID__1 ; Swap With Pbs Drug Id
+        /*CHANGE THE ROW BELOW MAP_SYNONYM_ID__2*/
+        and synonym_id = MAP_SYNONYM_ID__2 ; Swap With Synonym Id
+        and end_effective_dt_tm > sysdate
+    )
+;________________________________________________
+"""
+
 def fuzzy_logic_df_weighted(input_string, series):
     # Calculate similarity scores
     sort_scores = series.apply(lambda x: fuzz.token_sort_ratio(input_string, x))
-    #set_scores = series.apply(lambda x: fuzz.token_set_ratio(input_string, x))
 
     # Check for first word match and apply additional boost
-    first_word_boost = 20  # Define a boost for matching the first word
     first_word_scores = series.apply(
-        lambda x: first_word_boost if x.lower().split()[0] == input_string.lower().split()[0] else 0
+        lambda x: 100 if x.lower().split()[0] == input_string.lower().split()[0] else 0
     )
 
-    # Apply the first word boost to the scores that are less than 100 - first_word_boost
-    boosted_scores = pd.Series([min(100, a + w) for a, w in zip(sort_scores, first_word_scores)])
+    # Calculate the weighted average of the first word scores and the total scores
+    # with weights of 0.2 and 0.8 respectively 
+    # and round to the nearest integer and convert to integer
+    weighted_scores = (0.2 * first_word_scores + 0.8 * sort_scores).round().astype(int)
 
     # Create a dataframe
     df = pd.DataFrame({
         'Value': series,
-        'Score': boosted_scores
+        'Score': weighted_scores
     })
     # Sort the dataframe by score in descending order
     df = df.sort_values(by='Score', ascending=False)
@@ -261,5 +298,26 @@ def save_end():
         final_table_html=final_table_html,
     )
 
-if __name__ == '__main__':
+
+@app.route('/generatecode', methods=['GET', 'POST'])
+def generate_code():
+    if request.method == 'POST':
+        final_table = cache.get('final_table')  # Retrieve final_table from the cache
+        final_table_subset = final_table[['MAP_PBS_DRUG_ID_', 'MAP_SYNONYM_ID_']]  # Extract the specified columns
+
+
+
+        generated_codes = []
+        for _, row in final_table_subset.iterrows():
+            code = template
+            code = code.replace('MAP_PBS_DRUG_ID__1', str(row['MAP_PBS_DRUG_ID_']))
+            code = code.replace('MAP_SYNONYM_ID__2', str(row['MAP_SYNONYM_ID_']))
+            generated_codes.append(code)
+        
+        output = ('\n' * 3).join(generated_codes)
+        pyperclip.copy(output)  # Copy the content to the clipboard
+        return render_template('generatecode.html', output=output)
+    return render_template('generatecode.html')
+
+if __name__ == "__main__":
     app.run(debug=True)

@@ -1,13 +1,19 @@
 {
     "cSpell.words": [
         "choosefile",
+        "cnvtdatetime",
+        "curdate",
         "dataframe",
+        "finalmatches",
         "fuzzywuzzy",
         "iloc",
         "mapdata",
+        "multum",
+        "ocsm",
         "openpyxl",
         "pbsitems",
         "pharmacycatalog",
+        "pyperclip",
         "urandom",
         "werkzeug"
     ]

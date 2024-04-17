@@ -2,9 +2,15 @@
 <html>
 <head>
     <title>Final Matches</title>
+    <script>
+    function redirectToGenerateCode() {
+        window.location.href = "/generatecode";
+    }
+    </script>
 </head>
 <body>
     <h1>Final Matches</h1>
+    <button id="next-final" onclick="redirectToGenerateCode()">Next</button>
     <div id="tableContainer">
         {{ final_table_html | safe }}
     </div>
