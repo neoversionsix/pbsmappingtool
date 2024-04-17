@@ -1,8 +1,12 @@
 const { app, BrowserWindow } = require('electron')
 const http = require('http')
+const child_process = require('child_process')
+
+let win;
+let flaskServer;
 
 function createWindow () {
-    let win = new BrowserWindow({
+    win = new BrowserWindow({
         webPreferences: {
             nodeIntegration: true,
         },
@@ -30,6 +34,17 @@ function createWindow () {
         })
         newWin.loadURL(url)
     })
+
+    win.on('closed', function () {
+        if (flaskServer != null) {
+            flaskServer.kill();  // Stop the Flask server
+        }
+    });
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+    // Start the Flask server
+    flaskServer = child_process.spawn('python', ['path/to/your/app.py']);
+
+    createWindow();
+});

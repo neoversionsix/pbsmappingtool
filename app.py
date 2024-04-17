@@ -20,10 +20,10 @@ set
     ocsm.beg_effective_dt_tm = cnvtdatetime(curdate, 0004)
     ; Above line sets the activation time to today at 12:04 am, used to identify this type of update
     , ocsm.end_effective_dt_tm = cnvtdatetime("31-DEC-2100")
-    /*CHANGE THE ROW BELOW MAP_PBS_DRUG_ID__1*/
-    , ocsm.pbs_drug_id = MAP_PBS_DRUG_ID__1 ; Swap With Pbs Drug Id that maps to the synonym id
-    /*CHANGE THE ROW BELOW MAP_SYNONYM_ID__2*/
-    , ocsm.synonym_id = MAP_SYNONYM_ID__2 ; Swap With Synonym Id that maps to the pbs_drug_id
+    /*CHANGE THE ROW BELOW MAP_PBS_DRUG_ID_*/
+    , ocsm.pbs_drug_id = MAP_PBS_DRUG_ID_ ; Swap With Pbs Drug Id that maps to the synonym id
+    /*CHANGE THE ROW BELOW MAP_SYNONYM_ID_*/
+    , ocsm.synonym_id = MAP_SYNONYM_ID_ ; Swap With Synonym Id that maps to the pbs_drug_id
     , ocsm.drug_synonym_id = 0 ; clear multum mapping (multum mappings are not used)
     , ocsm.main_multum_drug_code = 0 ; clear multum mapping
     , ocsm.drug_identifier = "0" ; clear multum mapping
@@ -39,10 +39,10 @@ where
     (
         select 1
         from pbs_ocs_mapping
-        /*CHANGE THE ROW BELOW MAP_PBS_DRUG_ID__1*/
-        where pbs_drug_id = MAP_PBS_DRUG_ID__1 ; Swap With Pbs Drug Id
-        /*CHANGE THE ROW BELOW MAP_SYNONYM_ID__2*/
-        and synonym_id = MAP_SYNONYM_ID__2 ; Swap With Synonym Id
+        /*CHANGE THE ROW BELOW MAP_PBS_DRUG_ID_*/
+        where pbs_drug_id = MAP_PBS_DRUG_ID_ ; Swap With Pbs Drug Id
+        /*CHANGE THE ROW BELOW MAP_SYNONYM_ID_*/
+        and synonym_id = MAP_SYNONYM_ID_ ; Swap With Synonym Id
         and end_effective_dt_tm > sysdate
     )
 ;________________________________________________
@@ -310,8 +310,8 @@ def generate_code():
         generated_codes = []
         for _, row in final_table_subset.iterrows():
             code = template
-            code = code.replace('MAP_PBS_DRUG_ID__1', str(row['MAP_PBS_DRUG_ID_']))
-            code = code.replace('MAP_SYNONYM_ID__2', str(row['MAP_SYNONYM_ID_']))
+            code = code.replace('MAP_PBS_DRUG_ID_', str(row['MAP_PBS_DRUG_ID_']))
+            code = code.replace('MAP_SYNONYM_ID_', str(row['MAP_SYNONYM_ID_']))
             generated_codes.append(code)
         
         output = ('\n' * 3).join(generated_codes)
