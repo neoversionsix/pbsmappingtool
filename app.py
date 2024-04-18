@@ -199,6 +199,10 @@ def map_data():
     cache.set('matches', matches)  # Store matches in the cache
     matches_dict = matches.reset_index().to_dict('records')
 
+    # Calculate the progress as a percentage of the total number of items
+    total_items = (len(data1) * len(columns)) -1
+    current_item_number = row_number * len(columns) + column_number
+    progress = (current_item_number / total_items) * 100
 
     # Check if the current row and column are the the last ones 
     is_last_row_and_column = row_number >= len(data1) -1 and column_number >= len(columns) -1
@@ -211,7 +215,8 @@ def map_data():
         row_info=row_info,
         matches=matches_dict,
         final_table_html=final_table_html,
-        is_last_row_and_column=is_last_row_and_column  
+        is_last_row_and_column=is_last_row_and_column,
+        progress=progress 
     )
 
 
