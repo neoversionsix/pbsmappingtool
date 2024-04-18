@@ -302,15 +302,21 @@ def save_end():
         # Append the DataFrame to the final table
         final_table = pd.concat([final_table, df_to_append], ignore_index=True)
 
+    # Store the updated final table in the cache
     cache.set('final_table', final_table)
 
-    final_table_html = final_table.to_html(index=False)
-    # Store the updated final table in the cache
+    # Make a html table with NAME on the left
+    temp_table = final_table.copy()
+    if 'NAME' in temp_table.columns:
+        name = temp_table.pop('NAME')
+        temp_table.insert(0, 'NAME', name)
+    
+    # Convert the temporary table to html
+    final_table_html = temp_table.to_html(index=False)
     
     return render_template('finalmatches.html',
         final_table_html=final_table_html,
     )
-
 
 @app.route('/generatecode', methods=['GET', 'POST'])
 def generate_code():
