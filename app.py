@@ -12,6 +12,8 @@ columns = ['PRIMARY', 'BRAND', 'GENERIC', 'TRADE']  # List of columns to display
 
 UPLOAD_FOLDER = 'uploads'
 
+display_filter_columns = ["NAME", "PRIMARY", "BRAND", "TRADE", "PBS_CODE"]
+
 template = """
 ;________________________________________________
 ;  PBS mapping script for PBS_DRUG_ID: MAP_PBS_DRUG_ID_ and SYNONYM_ID: MAP_SYNONYM_ID_
@@ -143,8 +145,14 @@ def map_data():
     if final_table is None:
         final_table = pd.DataFrame()
 
+    #temp table for display the matches
+    if final_table.empty:
+        temp_table = pd.DataFrame()
+    else:
+        temp_table = final_table[display_filter_columns]
+
     # Convert the current final table to html
-    final_table_html = final_table.to_html(index=False)
+    final_table_html = temp_table.to_html(index=False)
 
     data1 = cache.get('data1')  # Retrieve data1 from the cache
     #data2 = cache.get('data2')  # Retrieve data2 from the cache
