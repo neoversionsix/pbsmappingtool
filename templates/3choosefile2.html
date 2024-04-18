@@ -9,7 +9,7 @@
     </script>
 </head>
 <body>
-    <h1>Step 3 - Load file 2 - Pharmacy Catalog</h1>
+    <h1>Part III - Load Pharmacy Catalog</h1>
     {% if not data_html2 %}
         <h3>Load the file with the Pharmacy Catalog</h3>
         <form id="fileForm" method="POST" enctype="multipart/form-data">
@@ -19,7 +19,7 @@
     {% endif %}
     {% if data_html2 %}
     <a href="/4mapdata"><button>Next</button></a>
-        <h2>Catalog Loaded (See below) - Click Next (above) </h2>
+        <h2>Catalog Loaded - Partial Preview - Now Click Next (above) </h2>
         <div>{{ data_html2 | safe }}</div>
     {% endif %}
 </body>

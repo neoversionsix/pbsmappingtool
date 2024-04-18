@@ -9,7 +9,7 @@
     </script>
 </head>
 <body>
-    <h1>Step 2 - Load file 1 - New Items</h1>
+    <h1>Part II - Load New PBS Items</h1>
     {% if not data_html1 %}
         <h3>Load the file with the new PBS Items</h3>
         <form id="fileForm" method="POST" enctype="multipart/form-data">
@@ -19,7 +19,7 @@
     {% endif %}
     {% if data_html1 %}
     <a href="/3choosefile2"><button>Next</button></a>
-        <h2>New PBS Items Loaded (See below) - Click Next (above) </h2>
+        <h2>New PBS Items Loaded Preview - Now Click Next (above) </h2>
         <div>{{ data_html1 | safe }}</div>
     {% endif %}
 </body>
