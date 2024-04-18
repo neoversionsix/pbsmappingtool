@@ -44,7 +44,7 @@ function createWindow () {
 
 app.whenReady().then(() => {
     // Start the Flask server
-    flaskServer = child_process.spawn('python', ['path/to/your/app.py']);
+    flaskServer = child_process.spawn('python', ['app.py']);
 
     createWindow();
 });
