@@ -367,7 +367,7 @@ def generate_code():
 
 #if __name__ == "__main__":#This line was messing up launching the app in production
 app.run(debug=True)
-=======
+
 from flask import Flask, render_template, request
 import pandas as pd
 
