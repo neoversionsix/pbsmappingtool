@@ -35,4 +35,3 @@ function startElectron() {
 
 // Start checking the server and the Electron app immediately
 checkServer();
-startElectron();

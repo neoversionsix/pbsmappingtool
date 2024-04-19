@@ -4,13 +4,27 @@
   "description": "PBS Australia for Cerner Mapping Tool",
   "main": "main.js",
   "scripts": {
-    "start": "set FLASK_APP=app.py && start /B flask run >nul 2>&1 && node start-electron.js",
-    "start-electron": "electron ."
+    "start": "start /B app.exe >nul 2>&1 && node start-electron.js",
+    "start-electron": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "note1": "For development use: set FLASK_APP=app.py && start /B flask run >nul 2>&1 && node start-electron.js",
+    "note2": "For production use: start /B app.exe >nul 2>&1 && node start-electron.js"
   },
   "keywords": [],
   "author": "Jason Whittle",
-  "license": "ISC",
-  "dependencies": {
-    "electron": "^29.1.4"
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.neoversionsix.pbsmappingtool",
+    "win": {
+      "target": "nsis"
+    },
+    "extraResources": [
+      "app.exe"
+    ]
   }
 }

@@ -43,8 +43,10 @@ function createWindow () {
 }
 
 app.whenReady().then(() => {
-    // Start the Flask server
-    flaskServer = child_process.spawn('python', ['app.py']);
+    // Start the Flask server 
+    //CHANGE DEPENDING ON IF YOU'RE DEVELOPING OR PACKAGING OR TESTING THE EXE BEFORE PACKAGING
+    //flaskServer = child_process.spawn('python', ['app.py']); //This is the Development server
+    flaskServer = child_process.spawn('app.exe'); //This is the exe server checker
 
     createWindow();
 });

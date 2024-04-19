@@ -4,13 +4,14 @@ import pandas as pd
 import openpyxl
 from fuzzywuzzy import fuzz, process
 import os
+from io import BytesIO
 #from werkzeug.utils import secure_filename
 import pickle
 import pyperclip
 
+#Global variables
+#region
 columns = ['PRIMARY', 'BRAND', 'GENERIC', 'TRADE']  # List of columns to display
-
-UPLOAD_FOLDER = 'uploads'
 
 display_filter_columns = ["NAME", "PRIMARY", "BRAND", "TRADE", "PBS_CODE"]
 
@@ -49,7 +50,10 @@ where
     )
 ;________________________________________________
 """
+#endregion
 
+#Global Function
+#region
 def fuzzy_logic_df_weighted(input_string, series):
     # Calculate similarity scores
     sort_scores = series.apply(lambda x: fuzz.token_sort_ratio(input_string, x))
@@ -72,52 +76,57 @@ def fuzzy_logic_df_weighted(input_string, series):
     # Sort the dataframe by score in descending order
     df = df.sort_values(by='Score', ascending=False)
     return df
+#endregion
 
-# Ensure the upload folder exists
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+)
 # app.secret_key = 'your_secret_key'  # Set a fixed secret key for the session
 app.secret_key = os.urandom(24)  # Set a secret key for the session
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 # Routing for the main page index.html
+#region
 @app.route('/', methods=['GET', 'POST'])
 def home():
     session['row_number'] = 0  # Initialize row_number in the session
     session['column_number'] = 0  # Initialize column_number in the session
     return render_template('index.html')
+#endregion
 
 # Routing for the page 2choosefile1.html
+#region
 @app.route('/2choosefile1', methods=['GET', 'POST'])
 def choose_file_1():
     data_html1 = None  # Initialize data_html1 variable
     if 'file1' in request.files:
         file1 = request.files['file1']
         # Define the file path
-        file1_path = os.path.join(UPLOAD_FOLDER, 'pbsitems.xlsx')  
-        file1.save(file1_path)  # Save the file
-        data1 = pd.read_excel(file1_path, engine='openpyxl') # Read to dataframe
+        #file1_path = os.path.join(UPLOAD_FOLDER, 'pbsitems.xlsx')  
+        #file1.save(file1_path)  # Save the file
+        #data1 = pd.read_excel(file1_path, engine='openpyxl') # Read to dataframe
+        # Read the file into a BytesIO object
+        file1_stream = BytesIO(file1.read())
+        # Read the BytesIO object into a pandas DataFrame
+        data1 = pd.read_excel(file1_stream, engine='openpyxl')
         cache.set('data1', data1)  # Store data1 in the cache
         data_html1 = data1.to_html(index=False)
     return render_template('2choosefile1.html', data_html1=data_html1)
+#endregion
 
 
 # Routing for the page 3choosefile2.html
+#region
 @app.route('/3choosefile2', methods=['GET', 'POST'])
 def choose_file_2():
     data_html2 = None  # Initialize data_html2 variable
     if 'file2' in request.files:
         file2 = request.files['file2']
-        # Define the file path
-        file2_path = os.path.join(UPLOAD_FOLDER, 'pharmacycatalog.xlsx')
-        #file2.save(file2_path)  # Save the file
-        data2 = pd.read_excel(file2_path, engine='openpyxl')
-        #cache.set('data2', data2)  # Store data2 in the cache
+        file2_stream = BytesIO(file2.read())
+        data2 = pd.read_excel(file2_stream, engine='openpyxl')
         data_html2 = data2.head(20).to_html(index=False)
-        
-
+      
         #Store the catalog items separately (by type) in cache
         df_primaries = data2[data2['ITEM_TYPE'] == 'PRIMARY']
         df_primaries = df_primaries.reset_index(drop=True)  # Reset the index
@@ -136,8 +145,10 @@ def choose_file_2():
         cache.set('df_trades', df_trades)  # Store in the cache
 
     return render_template('3choosefile2.html', data_html2=data_html2)
+#endregion
 
 # Routing for the page 4mapdata.html
+#region
 @app.route('/4mapdata', methods=['GET', 'POST'])
 def map_data():
     # Get the final table from the cache, or initialize it if it doesn't exist
@@ -226,9 +237,11 @@ def map_data():
         is_last_row_and_column=is_last_row_and_column,
         progress=progress 
     )
+#endregion
 
 
 # next-save button functionality
+#region
 @app.route('/save', methods=['POST'])
 def save():
     current_item = session.get('current_item', '')  # Get the value of current_item from the session
@@ -274,7 +287,10 @@ def save():
     cache.set('final_table', final_table)
 
     return redirect(url_for('map_data'))  # Redirect back to the map_data route
+#endregion
 
+# routing for the save_end button and final matches page
+#region
 @app.route('/save_end', methods=['POST'])
 def save_end():
     current_item = session.get('current_item', '')  # Get the value of current_item from the session
@@ -317,14 +333,15 @@ def save_end():
     return render_template('finalmatches.html',
         final_table_html=final_table_html,
     )
+#endregion
 
+# routing for the generatecode page
+#region
 @app.route('/generatecode', methods=['GET', 'POST'])
 def generate_code():
     if request.method == 'POST':
         final_table = cache.get('final_table')  # Retrieve final_table from the cache
         final_table_subset = final_table[['MAP_PBS_DRUG_ID_', 'MAP_SYNONYM_ID_']]  # Extract the specified columns
-
-
 
         generated_codes = []
         for _, row in final_table_subset.iterrows():
@@ -337,6 +354,7 @@ def generate_code():
         pyperclip.copy(output)  # Copy the content to the clipboard
         return render_template('generatecode.html', output=output)
     return render_template('generatecode.html')
+#endregion
 
-if __name__ == "__main__":
-    app.run(debug=True)
+#if __name__ == "__main__":#This line was messing up launching the app in production
+app.run(debug=True)
