@@ -80,13 +80,14 @@ def fuzzy_logic_df_weighted(input_string, series):
     return df
 #endregion
 
+import pkg_resources
+
 # Set the application path, depending if exe or py file
 if getattr(sys, 'frozen', False):
-    application_path = os.path.dirname(sys.executable)
-elif __file__:
-    application_path = os.path.dirname(__file__)
+    template_dir = pkg_resources.resource_filename(__name__, 'templates')
+else:
+    template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 
-template_dir = os.path.join(application_path, 'templates')
 app = Flask(__name__, template_folder=template_dir)
 
 # app.secret_key = 'your_secret_key'  # Set a fixed secret key for the session
