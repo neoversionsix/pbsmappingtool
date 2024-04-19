@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_caching import Cache
 import pandas as pd
@@ -389,4 +388,3 @@ def home():
 
 if __name__ == '__main__':
     app.run(debug=True)
->>>>>>> 7a661a6 (x)
