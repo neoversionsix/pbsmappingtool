@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_caching import Cache
 import pandas as pd
@@ -8,6 +9,7 @@ from io import BytesIO
 #from werkzeug.utils import secure_filename
 import pickle
 import pyperclip
+import sys
 
 #Global variables
 #region
@@ -78,10 +80,15 @@ def fuzzy_logic_df_weighted(input_string, series):
     return df
 #endregion
 
-app = Flask(
-    __name__,
-    template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
-)
+# Set the application path, depending if exe or py file
+if getattr(sys, 'frozen', False):
+    application_path = os.path.dirname(sys.executable)
+elif __file__:
+    application_path = os.path.dirname(__file__)
+
+template_dir = os.path.join(application_path, 'templates')
+app = Flask(__name__, template_folder=template_dir)
+
 # app.secret_key = 'your_secret_key'  # Set a fixed secret key for the session
 app.secret_key = os.urandom(24)  # Set a secret key for the session
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
@@ -92,6 +99,8 @@ cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 def home():
     session['row_number'] = 0  # Initialize row_number in the session
     session['column_number'] = 0  # Initialize column_number in the session
+    index_path = os.path.join(app.template_folder, 'index.html')
+    print("Index path:", index_path)
     return render_template('index.html')
 #endregion
 
@@ -358,3 +367,25 @@ def generate_code():
 
 #if __name__ == "__main__":#This line was messing up launching the app in production
 app.run(debug=True)
+=======
+from flask import Flask, render_template, request
+import pandas as pd
+
+app = Flask(__name__)
+
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    data_html1 = ""
+    data_html2 = ""
+    if request.method == 'POST':
+        file1 = request.files['file1']
+        file2 = request.files['file2']
+        data1 = pd.read_excel(file1, engine='openpyxl')
+        data2 = pd.read_excel(file2, engine='openpyxl')
+        data_html1 = data1.head(10).to_html(index=False)
+        data_html2 = data2.head(10).to_html(index=False)
+    return render_template('index.html', data_html1=data_html1, data_html2=data_html2)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+>>>>>>> 7a661a6 (x)
