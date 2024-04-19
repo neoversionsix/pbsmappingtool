@@ -1,6 +1,7 @@
 const { app, BrowserWindow } = require('electron')
 const http = require('http')
 const child_process = require('child_process')
+const path = require('path')
 
 let win;
 let flaskServer;
@@ -43,10 +44,16 @@ function createWindow () {
 }
 
 app.whenReady().then(() => {
+    // Paths for the Flask servers
+    const flaskExecutableDev = 'app.py'; // Development server
+    const flaskExecutableExe = 'app.exe'; // Exe server checker
+    const flaskExecutablePackaged = path.join(process.resourcesPath, 'app.exe');
+
+    // Choose the Flask server to use
+    const flaskExecutable = flaskExecutablePackaged; // Switch this line to use a different server
+
     // Start the Flask server 
-    //CHANGE DEPENDING ON IF YOU'RE DEVELOPING OR PACKAGING OR TESTING THE EXE BEFORE PACKAGING
-    //flaskServer = child_process.spawn('python', ['app.py']); //This is the Development server
-    flaskServer = child_process.spawn('app.exe'); //This is the exe server checker
+    flaskServer = child_process.spawn(flaskExecutable);
 
     createWindow();
 });
