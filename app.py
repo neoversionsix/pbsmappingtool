@@ -1,3 +1,5 @@
+#IMPORTING LIBRARIES
+#region
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_caching import Cache
 import pandas as pd
@@ -9,6 +11,9 @@ from io import BytesIO
 import pickle
 import pyperclip
 import sys
+from datetime import timedelta
+import pkg_resources
+#endregion
 
 #Global variables
 #region
@@ -79,7 +84,7 @@ def fuzzy_logic_df_weighted(input_string, series):
     return df
 #endregion
 
-import pkg_resources
+
 
 # Set the application path, depending if exe or py file
 if getattr(sys, 'frozen', False):
@@ -91,7 +96,16 @@ app = Flask(__name__, template_folder=template_dir)
 
 # app.secret_key = 'your_secret_key'  # Set a fixed secret key for the session
 app.secret_key = os.urandom(24)  # Set a secret key for the session
-cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+#Set up Cache
+config = {
+    "DEBUG": True,          # some Flask specific configs
+    "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
+    "CACHE_DEFAULT_TIMEOUT": 25000 # Don't clear cache for 25k seconds
+}
+
+app.config.from_mapping(config)
+cache = Cache(app)
 
 # Routing for the main page index.html
 #region
@@ -118,9 +132,11 @@ def choose_file_1():
         # Read the file into a BytesIO object
         file1_stream = BytesIO(file1.read())
         # Read the BytesIO object into a pandas DataFrame
-        data1 = pd.read_excel(file1_stream, engine='openpyxl')
+        data1 = pd.read_excel(file1_stream, engine='openpyxl', dtype=str)
         cache.set('data1', data1)  # Store data1 in the cache
         data_html1 = data1.to_html(index=False)
+        # Save the file path in the session
+        session['file1_path'] = file1.filename
     return render_template('2choosefile1.html', data_html1=data_html1)
 #endregion
 
@@ -133,7 +149,7 @@ def choose_file_2():
     if 'file2' in request.files:
         file2 = request.files['file2']
         file2_stream = BytesIO(file2.read())
-        data2 = pd.read_excel(file2_stream, engine='openpyxl')
+        data2 = pd.read_excel(file2_stream, engine='openpyxl', dtype=str)
         data_html2 = data2.head(20).to_html(index=False)
       
         #Store the catalog items separately (by type) in cache
@@ -174,7 +190,25 @@ def map_data():
     # Convert the current final table to html
     final_table_html = temp_table.to_html(index=False)
 
-    data1 = cache.get('data1')  # Retrieve data1 from the cache
+    # Try to get data1 from the cache
+    try:
+        data1 = cache.get('data1')
+        if not isinstance(data1, pd.DataFrame):
+            raise ValueError("data1 is not a DataFrame")
+    except Exception as e:
+        print(f"An error occurred while retrieving data1 from the cache: {e}")
+        # Try to reload data1 from the file
+        try:
+            file1_path = session.get('file1_path')
+            if file1_path is not None:
+                data1 = pd.read_excel(file1_path, engine='openpyxl')
+                cache.set('data1', data1)  # Save the reloaded DataFrame in the cache
+                print('second data1 load attempt successful')
+            else:
+                raise ValueError("file1_path is not in the session")
+        except Exception as e:
+            print(f"An error occurred while reloading data1 from the file: {e}")
+            data1 = None  # or some default value
     #data2 = cache.get('data2')  # Retrieve data2 from the cache
     #df_primaries = cache.get('df_primaries')  # Retrieve df_primaries from the cache
     #df_brands = cache.get('df_brands')  # Retrieve df_brands from the cache

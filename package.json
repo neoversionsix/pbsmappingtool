@@ -1,6 +1,6 @@
 {
   "name": "pbsmappingtool",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "PBS Australia for Cerner Mapping Tool",
   "main": "main.js",
   "scripts": {
