@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Map Data</title>
+    <style>
+        .container {
+            display: grid;
+            grid-template-rows: 5% 20% 75% 5%;
+            height: 90vh;
+            width: 99%;
+        }
+        .progress-bar {
+            grid-row: 1;
+            background: lightgray;
+        }
+        .progress-bar div {
+            height: 100%;
+            background: blue;
+            width: 0; /* Update this value to fill the progress bar */
+        }
+        .window-container {
+            grid-row: 2 / 4;
+            display: grid;
+            grid-template-columns: 40% 60%;
+            grid-template-rows: 1fr 3fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .window-section {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Added this line */
+        }
+        .window {
+            border: 1px solid black;
+            padding: 10px;
+            overflow: auto; /* Adds scroll bars when needed */
+            flex-grow: 1;
+        }
+        .button-container {
+            grid-row: 4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+        }
+    </style>
+    <script>
+        function disableButton(btn) {
+            // Disable the button
+            btn.disabled = true;
+
+            // Re-enable the button after 2 seconds
+            setTimeout(function(){ btn.disabled = false; }, 4000);
+        }
+    </script>
+</head>
+<body>
+    <div style="font-size: 0.5em;">
+    <p>Part IV - Map Data</p>
+    </div>
+    <div class="container">
+        <div class="progress-bar" style="max-width: 99vw;">
+            <div style="width: {{ progress }}%;"></div>
+        </div>
+        <div class="window-container">
+            <div class="window-section">
+                <h4>Saved Matches</h4>
+                <div class="window" id="saved-matches" style="max-height: 10vh; max-width: 40vw; font-size: 0.6em;">
+                    {{ final_table_html | safe }}
+                </div>
+            </div>
+            <div class="window-section">
+                <h4>Current Item Name (Row: {{ row_number }}, Type: {{ current_column }})</h4>
+                <div class="window" id="current-item-name" style="max-height: 10vh; max-width: 56vw;">
+                    {{ current_item }}
+                </div>
+            </div>
+            <div class="window-section">
+                <h4>Current Item Details</h4>
+                <div class="window" id="current-item-details" style="max-height: 50vh; max-width: 40vw;">
+                    {% for column, value in row_info.items() %}
+                        {{ column }}: {{ value }}<br>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="window-section">
+                <h4>{{ current_column }} Match Options</h4>
+                <form id="my-form" method="POST" action="/save">
+                    <div class="window" id="match-options" style="max-height: 50vh; max-width: 56vw;">
+                        {% for match in matches %}
+                            <input type="checkbox" id="match-{{ match.index }}" name="match-{{ match.index }}">
+                            <label for="match-{{ match.index }}">
+                                {{ match.Value }} (<span style="color: green;">{{ match.Score }}</span>)
+                            </label><br>
+                        {% endfor %}
+                    </div>
+            </div>
+        </div>
+                <div class="button-container">
+                    <button id="next-save" type="submit" {% if is_last_row_and_column %}disabled{% endif %} onclick="setTimeout(function(){disableButton(document.getElementById('next-save'));}, 100);">
+                        Next / Save Selections
+                    </button>
+                    <button id="save-end" name="save-end" type="submit" onclick="document.getElementById('my-form').action='/save_end';" style="display: {% if is_last_row_and_column %}block{% else %}none{% endif %};">
+                        SAVE/END
+                    </button>
+                </form>
+                </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+    <style>
+    </style>
+    <script>
+        // Copy to Clipboard
+        function copyToClipboard(url) {
+            fetch(url)
+                .then(response => response.text())
+                .then(text => {
+                    var tempInput = document.createElement("textarea");
+                    tempInput.value = text;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(tempInput);
+                    alert("Text copied to clipboard");
+                });
+        }
+    </script>
+</head>
+<body>
+    <h1>The PBS Mapping Tool</h1>
+    <h2>Part I: Run the CCL scripts and save the output</h2>
+    <h3>1. Click the button below to copy the code to your clipboard, then paste in DVDev and run the script</h3>
+    <button onclick="copyToClipboard('https://raw.githubusercontent.com/neoversionsix/custom-ccl-jobs/main/PBS/PBS%20Last%20Installed%20Package%20Items%20to%20Map.ccl')">
+        Copy PBS Items to Map CCL Script
+    </button>
+    <p>Save the PBS Items to a xlsx spreadsheet called 'PBS Items' to load in later. Make all the excel cells 'Text' rather than 'General' in case Excel automatically changes date formats etc</p>
+    <h3>2. Click the button below to copy the code, cntl-v in DVDev and run the script</h3>
+    <button onclick="copyToClipboard('https://raw.githubusercontent.com/neoversionsix/custom-ccl-jobs/main/PBS/PBS%20Pharmacy%20Catalogue%20-%20Possible%20Items%20to%20Map%20to%20(All%20types).ccl')">
+        Copy Pharmacy Catalog CCL Script
+    </button>
+    <p>Save the Pharmacy Catalog to a xlsx spreadsheet called 'Pharmacy Catalog' to load in later.</p>
+    <h3>3. Click Next to begin mapping</h3>
+    <a href="/2choosefile1"><button>Next</button></a>
+    <br><br>
+    <div style="border: 1px solid black; padding: 5px; font-size: 0.8em;">
+        <h3>NOTES ON USE: </h3>
+        <ul>
+            <li>Single click buttons in this app (double clicking might cause issues)</li>
+            <li>At the End, after the update code is stored in your clipboard you can simply close the window to shut down the app</li>
+            <li>Care has been taken to have the desired functionality, but can't be guaranteed, so look over the final update code</li>
+        </ul>
+        <br><br>
+        <p>Programmer: Jason Whittle (neoversionsix on github)
+        <br>Licence: MIT
+        <br>Use the source code as you wish. Free to use and copy and everything else
+        <br>Version: 1.0
+        <br>Created: April 2024
+        </p>
+    </div>
+</body>
+</html>
